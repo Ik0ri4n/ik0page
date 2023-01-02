@@ -1,3 +1,16 @@
-<h1>Posts</h1>
+<script lang="ts">
+	import PostPreview from '$lib/components/PostPreview.svelte';
+import type { PageData } from './$types';
 
-<p>This page will contain a list of posts of the blog.</p>
+	export let data: PageData;
+</script>
+
+<h1>Posts</h1>
+      
+<ul>
+  {#each data.posts as post}
+    <li>
+        <PostPreview {post}></PostPreview>
+    </li>
+  {/each}
+</ul>
