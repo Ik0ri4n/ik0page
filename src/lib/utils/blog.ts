@@ -1,7 +1,7 @@
-import type Post from '$lib/types/post';
+import Post from '$lib/types/post';
 import type { SvelteComponent, SvelteComponentTyped } from 'svelte';
 
-let slugToPath: Map<string, {folder: string, file: string}>;
+let slugToPath: Map<string, { folder: string; file: string }>;
 
 const getSlug = (path: string): string => {
 	const slug = path.split('/').pop()?.split('.').shift()?.split('_').pop();
@@ -24,11 +24,11 @@ export const getPost = async (
 		Object.keys(paths).forEach(async (path) => {
 			const regex = /.*\/content\/blog\/([0-9]{4})\/(.+)\.md/;
 			const parts = path.match(regex);
-			if(!parts) {
-				throw new Error("Invalid post path format");
+			if (!parts) {
+				throw new Error('Invalid post path format');
 			}
-			
-			slugToPath.set(getSlug(path), {folder:parts[1], file: parts[2]});
+
+			slugToPath.set(getSlug(path), { folder: parts[1], file: parts[2] });
 		});
 	}
 
@@ -36,18 +36,18 @@ export const getPost = async (
 	if (!parts) {
 		throw new Error('Invalid slug for posts');
 	}
-	const {folder, file} = parts;
-	
-	const {default: Content, metadata} = await import(`../../content/blog/${folder}/${file}.md`);
+	const { folder, file } = parts;
+
+	const { default: Content, metadata } = await import(`../../content/blog/${folder}/${file}.md`);
 	return {
 		Content: Content,
-		meta: {
-			title: metadata.title,
-			slug: slug,
-			date: metadata.date,
-			excerpt: metadata.excerpt,
-			categories: metadata.categories || {}
-		} satisfies Post
+		meta: new Post(
+			metadata.title,
+			slug,
+			metadata.date,
+			metadata.excerpt,
+			metadata.categories || []
+		) satisfies Post
 	};
 };
 
@@ -58,13 +58,13 @@ export const getPosts = async (): Promise<Post[]> => {
 		Object.keys(mdModules).map(async (path) => {
 			const { metadata } = await mdModules[path]();
 
-			return {
-				title: metadata.title,
-				slug: getSlug(path),
-				date: metadata.date,
-				excerpt: metadata.excerpt,
-				categories: metadata.categories || {}
-			} satisfies Post;
+			return new Post(
+				metadata.title,
+				getSlug(path),
+				metadata.date,
+				metadata.excerpt,
+				metadata.categories || []
+			) satisfies Post;
 		})
 	);
 
