@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type Post from '$lib/types/post';
-	export let post: Post;
+	import type { PostInfo } from '$lib/types/post';
+	export let post: PostInfo;
 </script>
 
 <section>

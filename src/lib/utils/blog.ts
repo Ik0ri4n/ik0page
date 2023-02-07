@@ -1,5 +1,5 @@
-import Post from '$lib/types/post';
-import type { SvelteComponent, SvelteComponentTyped } from 'svelte';
+import { Post, PostInfo } from '$lib/types/post';
+import type { SvelteComponent } from 'svelte';
 
 let slugToPath: Map<string, { folder: string; file: string }>;
 
@@ -38,6 +38,9 @@ export const getPost = async (
 	}
 	const { folder, file } = parts;
 
+	const posts = await getPosts();
+	const index = posts.findIndex((p) => p.slug == slug);
+
 	const { default: Content, metadata } = await import(`../../content/blog/${folder}/${file}.md`);
 	return {
 		Content: Content,
@@ -46,25 +49,27 @@ export const getPost = async (
 			slug,
 			metadata.date,
 			metadata.excerpt,
-			metadata.categories || []
+			metadata.categories || [],
+			index < posts.length - 1 ? posts.at(index + 1) : undefined,
+			index > 0 ? posts.at(index - 1) : undefined
 		) satisfies Post
 	};
 };
 
-export const getPosts = async (): Promise<Post[]> => {
+export const getPosts = async (): Promise<PostInfo[]> => {
 	const mdModules = import.meta.glob<typeof import('*.md')>('../../content/blog/**/*.md');
 
 	const posts = await Promise.all(
 		Object.keys(mdModules).map(async (path) => {
 			const { metadata } = await mdModules[path]();
 
-			return new Post(
+			return new PostInfo(
 				metadata.title,
 				getSlug(path),
 				metadata.date,
 				metadata.excerpt,
 				metadata.categories || []
-			) satisfies Post;
+			) satisfies PostInfo;
 		})
 	);
 
