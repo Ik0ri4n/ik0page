@@ -1,7 +1,7 @@
 ---
 title: About this blog
-date: '2023-01-19'
-excerpt: 'Some introductory text'
+date: '2023-01-22'
+excerpt: 'I just started my blog. Find out more about its goals and topics here.'
 ---
 
 A little under a year ago, I started my journey into the riddles and joys of cybersecurity by joining [KITCTF](https://kitctf.de).
@@ -26,7 +26,7 @@ Anyways, I do still intend to write a post every now and then.
 
 This blog is intended as an open project and I would very much enjoy your feedback.
 It will start out without comments but I will probably add that once I find the time to implement it.
-The whole project is available at GitHub however and you can always open an issue if you have any questions, feedback or improvements.
+The whole project is available at [GitHub](https://github.com/Ik0ri4n/ik0page) however and you can always open an issue if you have any questions, feedback or improvements.
 
 I am no seasoned web developer and this project does also work as an opportunity for me to try out new technologies.
 Of course, I do my best to provide an interesting and accessible experience for everone.
