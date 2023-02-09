@@ -26,9 +26,9 @@ excerpt: "As it is my main field of interest currently, I mainly worked on rever
 </script>
 
 Last weekend we participated in [DiceCTF](https://ctftime.org/event/1838) with [KITCTF](https://kitctf.de/) and achieved a solid 16th place together.
-I worked full-time on the reversing challenges and actually managed to claim my first-ever first-blood on parallelism.
+I worked full-time on the reversing challenges and actually managed to claim my first-ever first-blood on [parallelism](#parallelism).
 As such, I wanted to provide a writeup for the challenge.
-Additionally, I'll include a writeup for the slightly more difficult not-baby-parallelism, another challenge I enjoyed a lot.
+Additionally, I'll include a writeup for the slightly more difficult [not-baby-parallelism](#not-baby-parallelism), another challenge I enjoyed a lot.
 
 Judging by the number of solves, the challenges have an easy or medium difficulty.
 Still, having started with CTFs about half a year ago, I wanted to provide these writeups for others starting out or trying to learn more.
@@ -168,7 +168,7 @@ We solved it by deducing the order of the operations (they're ordered randomly) 
 As works best for me, I quickly loaded the binary into ghidra to look at the program and find it's C++.
 Many people in our team dislike C++ reversing since it often complicates the process with structs, classes, template methods, optimizations etc.
 I agree that it is challenging but I started looking into it since my first own challenge (writeup coming soon!) and enjoying taking my time to look at the types and methods.
-If you're mainly interested in the part reversing the encoding, you can skip to that block directly.
+If you're mainly interested in the part reversing the encoding, you can [skip to that block](#encryption-logic) directly.
 
 ### The program structure
 
