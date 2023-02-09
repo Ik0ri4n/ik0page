@@ -211,7 +211,7 @@ The encryption contains two phases.
 
 During the first one, it iterates over the vector using the global position pointer to get unique positions for each thread.
 The round counter is used as the distance between elements and also determines the operation to be used.#
-Every time, the upper index is updated wit the result of the operation.
+Every time, the upper index is updated with the result of the operation.
 We visualized the element accesses of the algorithm like this:
 
 ![not-baby-parallelism first part of access structure]({nbparallel_accesses_first})
