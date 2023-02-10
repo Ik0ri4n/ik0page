@@ -1,38 +1,48 @@
 ---
 title: KITCTFCTF22 Slots
-date: '2023-02-03'
-excerpt: 'About two months ago I wrote my first ever CTF challenge. Let's look at it together in this author writeup!'
+date: '2023-02-09'
+excerpt: Two months ago I wrote my first ever CTF challenge. Let's look at it together in this author writeup!
 ---
 
 <script lang="ts">
-	import file from '$lib/assets/2023/02-03_kitctf-slots/file.png';
-	import flag_init from '$lib/assets/2023/02-03_kitctf-slots/flag_init.png';
-	import generate_state from '$lib/assets/2023/02-03_kitctf-slots/generate_state.png';
-	import initialize_random from '$lib/assets/2023/02-03_kitctf-slots/initialize_random.png';
-	import is_karlsruhe from '$lib/assets/2023/02-03_kitctf-slots/is_karlsruhe.png';
-	import print_result from '$lib/assets/2023/02-03_kitctf-slots/print_result.png';
-	import strings from '$lib/assets/2023/02-03_kitctf-slots/strings.png';
-	import decompiler_comparison from '$lib/assets/2023/02-03_kitctf-slots/decompiler_comparison.png';
+	import Challenge from '$lib/components/Challenge.svelte';
+
+    let downloads = ["/src/lib/assets/2023/02-09_kitctfctf-22-slots/slots.tar.gz",
+        "/src/lib/assets/2023/02-09_kitctfctf-22-slots/slots-fixed.tar.gz",
+        "/src/lib/assets/2023/02-09_kitctfctf-22-slots/source.cpp",
+        "/src/lib/assets/2023/02-09_kitctfctf-22-slots/HINTS.md",
+        "/src/lib/assets/2023/02-09_kitctfctf-22-slots/bruteforce.cpp",
+        "/src/lib/assets/2023/02-09_kitctfctf-22-slots/z3_i64toi32.py"];
+
+	import file from '$lib/assets/2023/02-09_kitctfctf-22-slots/file.png';
+	import flag_init from '$lib/assets/2023/02-09_kitctfctf-22-slots/flag_init.png';
+	import generate_state from '$lib/assets/2023/02-09_kitctfctf-22-slots/generate_state.png';
+	import initialize_random from '$lib/assets/2023/02-09_kitctfctf-22-slots/initialize_random.png';
+	import is_karlsruhe from '$lib/assets/2023/02-09_kitctfctf-22-slots/is_karlsruhe.png';
+	import print_result from '$lib/assets/2023/02-09_kitctfctf-22-slots/print_result.png';
+	import strings from '$lib/assets/2023/02-09_kitctfctf-22-slots/strings.png';
+	import decompiler_comparison from '$lib/assets/2023/02-09_kitctfctf-22-slots/decompiler_comparison.png';
+	import check_input from '$lib/assets/2023/02-09_kitctfctf-22-slots/check_input.png';
+	import custom_to_string from '$lib/assets/2023/02-09_kitctfctf-22-slots/custom_to_string.png';
 </script>
 
-About two months ago we, talking about my team [KITCTF](https://kitctf.de), organized our first ever [KITCTFCTF](https://2022.ctf.kitctf.de/).
+Two months ago we, talking about my team [KITCTF](https://kitctf.de), organized our first ever [KITCTFCTF](https://2022.ctf.kitctf.de/).
 While I am no experienced challenge author and did mainly work on the theming of the event,
 I couldn't let this opportunity pass without writing at least one challenge, the C++ reversing challenge Slots.
 In this writeup, I will go over the steps required for understanding the binary and getting the flag.
 
 ## Author writeup
 
-- (Author: Ik0ri4n)
-- Category: rev
-- Description:
-  > We are proud to present our brand new, homemade slot machine. It's a real beauty of retro gambling. But maybe we shouldn't have been so quick to launch it...
-  >
-  > `Please note that for the best experience you need a terminal with a mono font and UTF8 support. This does not affect the challenge itself though.`
+<Challenge name="Slots" author="Ik0ri4n" category="rev" solves={3} points={500} flag="KCTF&lbrace;0oPs,B3t73r_Pr0t3c7_Y0uR_D3buG_K3y5!&rbrace;" downloads={downloads}>
+We are proud to present our brand new, homemade slot machine. It's a real beauty of retro gambling. But maybe we shouldn't have been so quick to launch it...
+
+`Please note that for the best experience you need a terminal with a mono font and UTF8 support. This does not affect the challenge itself though.`
+</Challenge>
 
 ### WARNING
 
-If you want to solve the challenge yourselve but need a few hints I included another file with such help for you.
-Also note that I inluded a fixed version of the binary in case you want to solve the challenge the way it was initially intended.
+If you want to solve the challenge yourself but need a few hints I included [a file with such help]("/src/lib/assets/2023/02-09_kitctfctf-22-slots/HINTS.md") for you.
+Also note that I included a fixed version of the binary in case you want to solve the challenge the way it was initially intended.
 While the binary we deployed was perfectly solvable (with the same key) it includes two small errors:
 
 - One line of debug output wasn't commented out in the local version (might even help you)
@@ -47,17 +57,19 @@ First of, let's do some basic examinations of the challenge binary with `file` a
 ![file output]({file})
 ![strings output]({strings})
 
-From that we can already determine that we are dealing with a stripped binary.
+From that we can already determine that we are dealing with a stripped C++ binary.
 Additionally, we can assume that we need to find a debug key and that the binary reads and prints the flag in some special case.
 
-Now, I won't show exactely how to reverse each method since that does not make much sense as the author.
+Now, I won't show exactly how to reverse each method since that does not make much sense as the author.
 I will however show you the important functions and give some hints as to how you might understand them (using ghidra as an example, as I only use that decompiler currently).
 Additionally, I will give you some insights on my thought process.
+
+Another note before we start: please use the provided setup for testing to avoid problems because of different `rand` implementations!
 
 #### Backtracking from "flag.txt"
 
 As always, we could locate the `main` function from the entry point.
-In this case however, we can also quickly localize a `print_flag`-method by tracing the defined strings.
+In this case however, we can also quickly localize a `print_flag`-method by tracing the defined string "flag.txt".
 Going up one function, we find a method that is key to the program: `print_result`.
 It contains the logic for deciding the result of the game.
 I improved the readability a bit here by generating a struct from the parameter value and by changing some values to named booleans to get this state:
@@ -80,7 +92,7 @@ Since the parameter is used as a pointer with offsets you can try out our struct
 ![generate state important if-branch]({generate_state})
 
 This method initializes the struct, either randomly or as a flag win state, for the game.
-I actually generated the final state here as that makes it way easier to generate the animation states with a controlable outcome.
+I actually generated the final state here as that makes it way easier to generate the animation states with a controllable outcome.
 
 With that step we finished our backtracking and can try to bruteforce the value we need to inject to `srand()` (here you will need some time using the deployed version; the intended one terminates in way under a second as it has a much smaller key space).
 
@@ -128,15 +140,15 @@ Additionally, there is some function that converts a uint64 to a string.
 The first check tries to find a string from an array of number strings in the input and returns the remaining string and the position in the input.
 While it mainly uses library functions, ghidra requires some help with function signatures and struct definitions to provide a readable decompilation.
 
-![is_karlsruhe]({is_karlsruhe})
+![is_karlsruhe decompiled]({is_karlsruhe})
 
 And, by the way, those numbers (you need to trace them to the initialization function again) are the zipcodes of karlsruhe, since the slot machine was produced there ;)
 
-The second check tests the leetness of the remainder number (checking the ocurrence of all three and the percentage of leet digits in the whole number).
+The second check tests the leetness of the remainder number (checking the occurrence of all three and the percentage of leet digits in the whole number).
 You could actually ignore this check since you can reverse the random value to get the remainder.
 
 The last check ensures that you use the correct zipcode at the correct position to get the final key.
-Again, it uses a lot of library functions but you have to adjust the signatures and types to make it readable.
+Again, it uses a lot of library functions but you have to adjust the signatures (often the calling convention and parameters as in the [docs](https://en.cppreference.com/w/)) and types to make it readable.
 
 ![decompiler_comparison]({decompiler_comparison})
 
@@ -145,21 +157,21 @@ Especially Hexrays provides strong defaults in many cases.
 That doesn't need to bother you though, since free tools like ghidra can be just as strong with a bit of help.
 Again, simply adjusting function signatures and structs produces a perfectly understandable result.
 
-TODO: add image here
+![check_input improved decompilation result]({check_input})
 
 Now, we can deduce that the third check is actually just implemented as a string comparison of `input == prefix + KA_PLZS[index] + suffix`
 where the suffix length is `l = (int(remainder) % 53816) % (len(remainder) -1)`.
 
 Finally, we have to examine one last hurdle: a simple brute force protection.
-We pass a 64-bit integer  as input to `initialize_random`, but the checks and `srand` operate on 32-bit integers.
+We pass a 64-bit integer as input to `initialize_random`, but the checks and `srand` operate on 32-bit integers.
 I called the conversion-method `custom_to_string` as it converts a 64-bit integer to a 32-bit number string.
-Looking at its main loop it uses a repeated bitmask of `0b101001001000` where the marked positions must be zero 
+Looking at its main loop it uses a repeated bitmask of `0b101001001000` where the marked positions must be zero
 and the other bits are extracted for the actual value with bit-shifting.
 The minimum of `0xffff000000000000` ensures that this value is prefixed with all ones.
 
-TODO: image of method
+![custom_to_string decompiled]({custom_to_string})
 
-After the CTF, `@NAME` mentioned he didn't reverse the method but used Z3 for solving it.
+After the CTF, `@lkron` mentioned on Discord that he didn't reverse the method but used Z3 for solving it (I assume he meant this one).
 Since I couldn't find any writeups of the challenge online, I'll provide an example implementation of such an approach too:
 
 ```py
@@ -223,9 +235,3 @@ else:
     print("Solver error!")
 
 ```
-
-# TODOs
-
-- Use readable screenshots
-- Add int64 to int32 explanation
-- Include z3-solver for conversion and maybe also for checks?
