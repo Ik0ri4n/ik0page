@@ -64,13 +64,15 @@ Now, I won't show exactly how to reverse each method since that does not make mu
 I will however show you the important functions and give some hints as to how you might understand them (using ghidra as an example, as I only use that decompiler currently).
 Additionally, I will give you some insights on my thought process.
 
+In case your starting out reversing with ghidra, I can recommend [stacksmashing](https://www.youtube.com/@stacksmashing) for an introduction and tips and tricks, the docs of ghidra itself on their [website](https://ghidra.re) or the [GitHub repo](https://github.com/NationalSecurityAgency/ghidra) and forums for specific problems.
+
 Another note before we start: please use the provided setup for testing to avoid problems because of different `rand` implementations!
 
 #### Backtracking from "flag.txt"
 
 As always, we could locate the `main` function from the entry point.
 In this case however, we can also quickly localize a `print_flag`-method by tracing the defined string "flag.txt".
-Going up one function, we find a method that is key to the program: `print_result`.
+Going up one function from there, we find a method that is key to the program: `print_result`.
 It contains the logic for deciding the result of the game.
 I improved the readability a bit here by generating a struct from the parameter value and by changing some values to named booleans to get this state:
 
@@ -81,7 +83,7 @@ Shortly diving into that comparison function you will find out that it is a simp
 
 Now, having found that constant we can trace its references.
 The first occurrece in the binary is an initialization function.
-In case you didn't guess that, note that the four bytes value is simply a utf8-string:
+In case you didn't guess this, note that the four bytes value is simply a utf8-string:
 
 ![initialization of utf8 string]({flag_init})
 
@@ -138,17 +140,17 @@ There are three checks you need to pass to be able to set the seed.
 Additionally, there is some function that converts a uint64 to a string.
 
 The first check tries to find a string from an array of number strings in the input and returns the remaining string and the position in the input.
-While it mainly uses library functions, ghidra requires some help with function signatures and struct definitions to provide a readable decompilation.
+While it mainly uses library functions, ghidra requires some help with function signatures (often the calling convention and parameters as in the [docs](https://en.cppreference.com/w/)) and struct definitions to provide a readable decompilation.
 
 ![is_karlsruhe decompiled]({is_karlsruhe})
 
-And, by the way, those numbers (you need to trace them to the initialization function again) are the zipcodes of karlsruhe, since the slot machine was produced there ;)
+And, by the way, those numbers (you need to trace them to the initialization function again) are the zipcodes of karlsruhe, since the slot machine was produced there 😉
 
 The second check tests the leetness of the remainder number (checking the occurrence of all three and the percentage of leet digits in the whole number).
 You could actually ignore this check since you can reverse the random value to get the remainder.
 
 The last check ensures that you use the correct zipcode at the correct position to get the final key.
-Again, it uses a lot of library functions but you have to adjust the signatures (often the calling convention and parameters as in the [docs](https://en.cppreference.com/w/)) and types to make it readable.
+Again, it uses a lot of library functions but you have to adjust the signatures and types to make it readable.
 
 ![decompiler_comparison]({decompiler_comparison})
 
@@ -160,7 +162,7 @@ Again, simply adjusting function signatures and structs produces a perfectly und
 ![check_input improved decompilation result]({check_input})
 
 Now, we can deduce that the third check is actually just implemented as a string comparison of `input == prefix + KA_PLZS[index] + suffix`
-where the suffix length is `l = (int(remainder) % 53816) % (len(remainder) -1)`.
+where the suffix length is `length = (int(remainder) % 53816) % (len(remainder) -1)`.
 
 Finally, we have to examine one last hurdle: a simple brute force protection.
 We pass a 64-bit integer as input to `initialize_random`, but the checks and `srand` operate on 32-bit integers.
@@ -235,3 +237,10 @@ else:
     print("Solver error!")
 
 ```
+
+Now, I am no expert with Z3 and there will probably be easier solutions than this one but it should still work as a valid example.
+
+Finally, once you have the debug key, you can check it with the provided setup.
+Apart from the described bugs and it using the real flag there are no differences to the setup we used on our server.
+If you want to explore the code of the challenge I added the source file to the downloads [up there](#author-writeup).
+Additionally, I added some comments to better explain its functionality and point out the bugs.
