@@ -7,23 +7,23 @@ excerpt: Two months ago I wrote my first ever CTF challenge. Let's look at it to
 <script lang="ts">
 	import Challenge from '$lib/components/Challenge.svelte';
 
-    let downloads = ["/src/lib/assets/2023/02-10_kitctfctf-22-slots/slots.tar.gz",
-        "/src/lib/assets/2023/02-10_kitctfctf-22-slots/slots-fixed.tar.gz",
-        "/src/lib/assets/2023/02-10_kitctfctf-22-slots/source.cpp",
-        "/src/lib/assets/2023/02-10_kitctfctf-22-slots/HINTS.md",
-        "/src/lib/assets/2023/02-10_kitctfctf-22-slots/bruteforce.cpp",
-        "/src/lib/assets/2023/02-10_kitctfctf-22-slots/z3_i64toi32.py"];
+    let downloads = ["/src/lib/assets/2023/03_kitctfctf-22-slots/slots.tar.gz",
+        "/src/lib/assets/2023/03_kitctfctf-22-slots/slots-fixed.tar.gz",
+        "/src/lib/assets/2023/03_kitctfctf-22-slots/source.cpp",
+        "/src/lib/assets/2023/03_kitctfctf-22-slots/HINTS.md",
+        "/src/lib/assets/2023/03_kitctfctf-22-slots/bruteforce.cpp",
+        "/src/lib/assets/2023/03_kitctfctf-22-slots/z3_i64toi32.py"];
 
-	import file from '$lib/assets/2023/02-10_kitctfctf-22-slots/file.png';
-	import flag_init from '$lib/assets/2023/02-10_kitctfctf-22-slots/flag_init.png';
-	import generate_state from '$lib/assets/2023/02-10_kitctfctf-22-slots/generate_state.png';
-	import initialize_random from '$lib/assets/2023/02-10_kitctfctf-22-slots/initialize_random.png';
-	import is_karlsruhe from '$lib/assets/2023/02-10_kitctfctf-22-slots/is_karlsruhe.png';
-	import print_result from '$lib/assets/2023/02-10_kitctfctf-22-slots/print_result.png';
-	import strings from '$lib/assets/2023/02-10_kitctfctf-22-slots/strings.png';
-	import decompiler_comparison from '$lib/assets/2023/02-10_kitctfctf-22-slots/decompiler_comparison.png';
-	import check_input from '$lib/assets/2023/02-10_kitctfctf-22-slots/check_input.png';
-	import custom_to_string from '$lib/assets/2023/02-10_kitctfctf-22-slots/custom_to_string.png';
+	import file from '$lib/assets/2023/03_kitctfctf-22-slots/file.png';
+	import flag_init from '$lib/assets/2023/03_kitctfctf-22-slots/flag_init.png';
+	import generate_state from '$lib/assets/2023/03_kitctfctf-22-slots/generate_state.png';
+	import initialize_random from '$lib/assets/2023/03_kitctfctf-22-slots/initialize_random.png';
+	import is_karlsruhe from '$lib/assets/2023/03_kitctfctf-22-slots/is_karlsruhe.png';
+	import print_result from '$lib/assets/2023/03_kitctfctf-22-slots/print_result.png';
+	import strings from '$lib/assets/2023/03_kitctfctf-22-slots/strings.png';
+	import decompiler_comparison from '$lib/assets/2023/03_kitctfctf-22-slots/decompiler_comparison.png';
+	import check_input from '$lib/assets/2023/03_kitctfctf-22-slots/check_input.png';
+	import custom_to_string from '$lib/assets/2023/03_kitctfctf-22-slots/custom_to_string.png';
 </script>
 
 Two months ago we, talking about my team [KITCTF](https://kitctf.de), organized our first ever [KITCTFCTF](https://2022.ctf.kitctf.de/).
@@ -41,7 +41,7 @@ We are proud to present our brand new, homemade slot machine. It's a real beauty
 
 ### WARNING
 
-If you want to solve the challenge yourself but need a few hints I included [a file with such help]("/src/lib/assets/2023/02-10_kitctfctf-22-slots/HINTS.md") for you.
+If you want to solve the challenge yourself but need a few hints I included [a file with such help]("/src/lib/assets/2023/03_kitctfctf-22-slots/HINTS.md") for you.
 Also note that I included a fixed version of the binary in case you want to solve the challenge the way it was initially intended.
 While the binary we deployed was perfectly solvable (with the same key) it includes two small errors:
 
