@@ -1,6 +1,5 @@
 ---
 title: About this blog
-date: '2023-01-22'
 excerpt: 'I just started my blog. Find out more about its goals and topics here.'
 ---
 

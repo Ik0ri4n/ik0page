@@ -1,6 +1,5 @@
 ---
 title: Writeups from DiceCTF 2023
-date: '2023-02-09'
 excerpt: "As it is my main field of interest currently, I mainly worked on reversing challenges this DiceCTF. I'll go over the challenges parallelism and not-baby-parallelism, two challenges I really enjoyed. So let's dive right in!"
 ---
 

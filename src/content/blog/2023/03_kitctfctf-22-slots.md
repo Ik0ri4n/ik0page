@@ -1,6 +1,5 @@
 ---
 title: KITCTFCTF22 Slots
-date: '2023-02-10'
 excerpt: Two months ago I wrote my first ever CTF challenge. Let's look at it together in this author writeup!
 ---
 
