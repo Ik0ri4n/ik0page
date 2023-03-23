@@ -12,6 +12,26 @@ const getSlug = (path: string): string => {
 	return slug;
 };
 
+const getName = (path: string): string => {
+	const parts = path.split('/');
+	const name = parts.pop()?.split('.').shift();
+
+	if (!name) {
+		throw new Error('Invalid blog path format');
+	}
+	return name;
+};
+
+const getFolder = (path: string): string => {
+	const parts = path.split('/');
+	const folder = parts[parts.length - 2];
+
+	if (!folder) {
+		throw new Error('Invalid blog path format');
+	}
+	return folder;
+};
+
 export const getPost = async (
 	slug: string
 ): Promise<{
@@ -42,12 +62,13 @@ export const getPost = async (
 	const index = posts.findIndex((p) => p.slug == slug);
 
 	const { default: Content, metadata } = await import(`../../content/blog/${folder}/${file}.md`);
+	const generated = await import(`$lib/generated/blog/${folder}/${file}.json`);
 	return {
 		Content: Content,
 		meta: new Post(
 			metadata.title,
 			slug,
-			metadata.date,
+			generated.date,
 			metadata.excerpt,
 			metadata.categories || [],
 			index < posts.length - 1 ? posts.at(index + 1) : undefined,
@@ -62,11 +83,12 @@ export const getPosts = async (): Promise<PostInfo[]> => {
 	const posts = await Promise.all(
 		Object.keys(mdModules).map(async (path) => {
 			const { metadata } = await mdModules[path]();
+			const generated = await import(`$lib/generated/blog/${getFolder(path)}/${getName(path)}.json`);
 
 			return new PostInfo(
 				metadata.title,
 				getSlug(path),
-				metadata.date,
+				generated.date,
 				metadata.excerpt,
 				metadata.categories || []
 			) satisfies PostInfo;
