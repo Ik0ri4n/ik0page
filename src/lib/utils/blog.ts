@@ -62,7 +62,7 @@ export const getPost = async (
 	const index = posts.findIndex((p) => p.slug == slug);
 
 	const { default: Content, metadata } = await import(`../../content/blog/${folder}/${file}.md`);
-	const generated = await import(`../generated/blog/${folder}/${file}.json`);
+	const generated = await import(`$lib/generated/blog/${folder}/${file}.json`);
 	return {
 		Content: Content,
 		meta: new Post(
@@ -83,7 +83,7 @@ export const getPosts = async (): Promise<PostInfo[]> => {
 	const posts = await Promise.all(
 		Object.keys(mdModules).map(async (path) => {
 			const { metadata } = await mdModules[path]();
-			const generated = await import(`../generated/blog/${getFolder(path)}/${getName(path)}.json`);
+			const generated = await import(`$lib/generated/blog/${getFolder(path)}/${getName(path)}.json`);
 
 			return new PostInfo(
 				metadata.title,

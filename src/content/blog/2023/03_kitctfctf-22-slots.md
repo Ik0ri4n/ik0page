@@ -6,12 +6,13 @@ excerpt: Two months ago I wrote my first ever CTF challenge. Let's look at it to
 <script lang="ts">
 	import Challenge from '$lib/components/Challenge.svelte';
 
-    let downloads = ["/src/lib/assets/2023/03_kitctfctf-22-slots/slots.tar.gz",
-        "/src/lib/assets/2023/03_kitctfctf-22-slots/slots-fixed.tar.gz",
-        "/src/lib/assets/2023/03_kitctfctf-22-slots/source.cpp",
-        "/src/lib/assets/2023/03_kitctfctf-22-slots/HINTS.md",
-        "/src/lib/assets/2023/03_kitctfctf-22-slots/bruteforce.cpp",
-        "/src/lib/assets/2023/03_kitctfctf-22-slots/z3_i64toi32.py"];
+    import slots from "$lib/assets/2023/03_kitctfctf-22-slots/slots.tar.gz?url"
+    import slots_fixed from "$lib/assets/2023/03_kitctfctf-22-slots/slots-fixed.tar.gz?url"
+    import source from "$lib/assets/2023/03_kitctfctf-22-slots/source.cpp?url"
+    import hints from "$lib/assets/2023/03_kitctfctf-22-slots/HINTS.md?url"
+    import bruteforce from "$lib/assets/2023/03_kitctfctf-22-slots/bruteforce.cpp?url"
+    import z3_i64toi32 from "$lib/assets/2023/03_kitctfctf-22-slots/z3_i64toi32.py?url"
+    let downloads = [slots, slots_fixed, source, hints, bruteforce, z3_i64toi32];
 
 	import file from '$lib/assets/2023/03_kitctfctf-22-slots/file.png';
 	import flag_init from '$lib/assets/2023/03_kitctfctf-22-slots/flag_init.png';
@@ -40,7 +41,7 @@ We are proud to present our brand new, homemade slot machine. It's a real beauty
 
 ### WARNING
 
-If you want to solve the challenge yourself but need a few hints I included [a file with such help]("/src/lib/assets/2023/03_kitctfctf-22-slots/HINTS.md") for you.
+If you want to solve the challenge yourself but need a few hints I included [a file with such help]({hints}) for you.
 Also note that I included a fixed version of the binary in case you want to solve the challenge the way it was initially intended.
 While the binary we deployed was perfectly solvable (with the same key) it includes two small errors:
 
