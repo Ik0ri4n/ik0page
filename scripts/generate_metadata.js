@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import { writeFile } from 'fs';
 
-export const getName = (path: string): string => {
+export const getName = (path) => {
 	const parts = path.split('/');
 	const name = parts.pop()?.split('.').shift();
 
@@ -11,7 +11,7 @@ export const getName = (path: string): string => {
 	return name;
 };
 
-export const getFolder = (path: string): string => {
+export const getFolder = (path) => {
 	const parts = path.split('/');
 	const folder = parts[parts.length - 2];
 
