@@ -6,11 +6,8 @@ excerpt: "As it is my main field of interest currently, I mainly worked on rever
 <script lang="ts">
 	import Challenge from '$lib/components/Challenge.svelte';
 
-    import parallel_parallelism from "$lib/assets/2023/02_dice-ctf-23/parallelism?url"
-    import nbparallel_pppp from "$lib/assets/2023/02_dice-ctf-23/pppp?url"
-    import nbparallel_flag_out from "$lib/assets/2023/02_dice-ctf-23/flag.out?url"
-    let parallelism_downloads = [parallel_parallelism];
-    let nbparallelism_downloads = [nbparallel_pppp, nbparallel_flag_out];
+    let parallelism_downloads = ["/blog/2023/02_dice-ctf-23/parallelism"];
+    let nbparallelism_downloads = ["/blog/2023/02_dice-ctf-23/pppp", "/blog/2023/02_dice-ctf-23/flag.out"];
 
     import parallel_gather from "$lib/assets/2023/02_dice-ctf-23/parallel_gather.png"
     import parallel_main from "$lib/assets/2023/02_dice-ctf-23/parallel_main.png"
