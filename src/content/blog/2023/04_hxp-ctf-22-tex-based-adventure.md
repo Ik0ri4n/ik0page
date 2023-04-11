@@ -23,10 +23,10 @@ That happened to me last [hxp CTF](https://ctftime.org/event/1845), about a mont
 Of course, my team [KITCTF](https://kitctf.de/) participated, both because the highly rated CTF promised challenging, well, challenges and because hxp originated from a german team and we like to support and challenge each other.
 While we managed to solve quite a few challenges together, I did work solely on tex_based_adventure.
 
-The challenge stayed unsolved until the end of the event but I had the time to look at it a bit more afterwards and want to present our original progress and my later findings in this post-ctf writeup.
+The challenge stayed unsolved until the end of the event but I had the time to look at it a bit more afterward and want to present our original progress and my later findings in this post-ctf writeup.
 hxp themselves published an [author writeup](https://hxp.io/blog/98/hxp-CTF-2022-tex_based_adventure-writeup/) shortly after the CTF and I can highly recommend it.
 I will try to present my player perspective and provide more specific explanations so you can dive into the topics you're interested in.
-However, the author writeup still contains spoilers for this post so you might consider reading it afterwards if you haven't read it already.
+However, the author writeup still contains spoilers for this post so you might consider reading it afterward if you haven't read it already.
 
 ## tex_based_adventure
 
@@ -34,8 +34,8 @@ However, the author writeup still contains spoilers for this post so you might c
 Here’s our yearly “wait, you can actually code in this?” challenge.
 </Challenge>
 
-The challenge files contain a Dockerfile that installs texlive and executes the file `adventure.tex`.
-Looking at that file, it is configured to be executed with pdflatex and contains a block of code and then two data blocks that seem to be encoded in some way.
+The challenge files contain a Dockerfile that installs `texlive` and executes the file `adventure.tex`.
+Looking at that file, it is configured to be executed with `pdflatex` and contains a block of code and then two data blocks that seem to be encoded in some way.
 The first macro `\ExplSyntaxOn` reveals that the file uses LaTeX3 code, so let's look at that first.
 
 ### LaTeX3 101
@@ -45,7 +45,7 @@ It contains library methods for all kinds of tasks like IO, string manipulation,
 
 Alan Shawn wrote [a tutorial on his blog](https://www.alanshawn.com/latex3-tutorial/) that introduces the most important concepts, methods and data types for programming in LaTeX3.
 I highly recommend you read this article in case you want to take a closer look at the challenge on your own or would like to write a program in LaTeX3.
-I will still include a short explanation of the concepts relevant for the challenge though.
+I will still include a short explanation of the concepts relevant to the challenge though.
 In case you need to look up methods, the [API documentation](https://ctan.math.illinois.edu/macros/latex/contrib/l3kernel/interface3.pdf) provides detailed technical explanations.
 I always had a tab open with that document while reading through the challenge code.
 
@@ -54,12 +54,12 @@ Basically, LaTeX3 introduces a new syntax with `\ExplSyntaxOn` and `\ExplSyntaxO
 Public variables follow the format `\<scope>_<module>_<description>_<type>`.
 Public methods on the other hand are named like `\<module>_<description>:<arg-spec>` where arg-spec defines the parameters that this method expects.
 The basic types are `N and n` which represent a single token or set of tokens with no manipulation.
-You find the an explanation of the types in the tutorial or in the first chapter of the API docs.
+You find an explanation of the types in the tutorial or in the first chapter of the API docs.
 To control macro expansion the library provides variants of methods that accept expanded parameter types like `x and e`.
 Those parameters are expanded before being passed into the method.
 To avoid having to define such variants everywhere you can use the methods `\exp_args:N<args>` with a method and its parameters and define which parameters you want to expand by using the corresponding args-spec of `\exp_args`.
 
-To get a better grasp of the syntax let's look at a simple HelloWorld-program first:
+To get a better grasp of the syntax let's look at a simple HelloWorld program first:
 
 ```latex
 #!/usr/bin/latex \batchmode \catcode35=14 \input
@@ -125,13 +125,14 @@ We then created a convert-script ([see solution.zip](/blog/2023/04_hxp-ctf-22-te
 
 Working in a team is always quicker than working alone.
 As we didn't find any functional tooling for LaTeX3 code we settled vim with [vimtex](https://github.com/lervag/vimtex) for code highlighting and implemented a simple renaming script ([see solution.zip](/blog/2023/04_hxp-ctf-22-tex-based-adventure/solution.zip)) that pulls renames from our HedgeDoc instance.
-That allowed us to look at the program in parallel and apply renames consistently.
+That allowed us to go through the program in parallel and apply renames consistently.
+(The file `challenge.tex` contains all our renames and I will reference both names for clarity.)
 It does however lack a way to track renames so we had to copy the original file and reapply all changes if we wanted to adjust a name.
-We then started to look at by either tracking their usage or just looking at the most used once.
+We then started to look at it by either tracking their usage or just looking at the most used ones.
 I will explain my process though since my teammates quickly gave up on the challenge which, in hindsight, sadly did make sense.
 
 When I started working on the challenge we had already finished the deobfuscation step and a bit of analysis that revealed the challenge game included a bunch of anti-tampering checks (complex ones, I was told).
-Thus, I started helping with static analysis, more specifically by working on understanding what happens at game start.
+Thus, I started helping with static analysis, more specifically by working on understanding what happens at the game start.
 The last block of the main challenge code defines a new `world`-Environment that takes two parameters, the layout args and the content of the block, and calls the main method with these parameters.
 The main method of the game then parses this data, initializes its layout args with the given ones, loads the adventure file, prints the loading time and starts the main loop of the event.
 
@@ -141,7 +142,7 @@ We correctly anticipated that the world data would contain some kind of game sta
 The data was separated into blocks with commas, a big first block and then 25 smaller blocks, each of those base64-encoded.
 The first block is used to initialize a bunch of keys on the global game state dictionary with hex strings of different lengths or integers.
 Upon startup, only the first of the smaller blocks is parsed.
-The all contain a block of code that (re-)defines some method and set another batch of game state variables.
+They all contain a block of code that (re-)defines some method and set another batch of game state variables.
 
 ![parse_game_state code]({parse_game_state})
 ![parse_first_block code initializing globals]({parse_first_block})
@@ -150,8 +151,8 @@ The all contain a block of code that (re-)defines some method and set another ba
 I already knew about the game win check so I looked at it again to find out what part of the game state was relevant for it.
 It compares the variable `EdWG` to the hex-string `000102... 2F30`.
 The only modification of this variable however was some permutation based on one of six constants and was only called from the method that was defined by the smaller world blocks.
-It was called as a kind of hook every time a player placed a key item in a room and loaded the next block.
-From all that, I could deduce that this was some kind of game round logic: placing a key applies the corresponding permutation on `EdWG` and loads the new values.
+It was called like an event hook every time a player placed a key item in a room and loaded the next block.
+From all that, I could deduce that this was some kind of game-round logic: placing a key applies the corresponding permutation on `EdWG` and loads the new values.
 
 I couldn't quite figure out the constant-initialization process by the method `hxp_bvyZ` though.
 It uses something based on base 36 numbers but with a ton of nested methods that seemed to contain byte and bit arithmetics and so forth.
@@ -161,11 +162,11 @@ Thus, I gave up on static analysis and asked how difficult it would be to patch 
 
 Now that I asked, I got a pretty solid first guess: "You could try removing the `\stop` from `hxp_die` (originally `hxp_vEUz`)".
 At least that does work without any problems but I think most anti-tampering checks are pretty simple and allow for adding debug output anyway.
-Also, just replacing it with an empty method would be best as the change to batchmode will still affect the program.
-Anyway, I started adding debug output and[encrypting the modified code ([see solution.zip](/blog/2023/04_hxp-ctf-22-tex-based-adventure/solution.zip)).
+Also, just replacing it with an empty method would be best as the change to batch mode will still affect the program.
+Anyway, I started adding debug output and encrypting the modified code ([see solution.zip](/blog/2023/04_hxp-ctf-22-tex-based-adventure/solution.zip)).
 This was already shortly before the end of the CTF and I knew I would get nowhere near completing the challenge in time.
 The modified program did of course load for the same, excruciatingly long time but I basically did get all the game constants and initial state for free and also included print statements after variable updates (after each move and round).
-Having all this set up, I could quickly deduce the basic game logic.
+Having set all this up, I could quickly deduce the basic game logic.
 
 ![Game loop structure diagram]({game_loop})
 
@@ -173,33 +174,33 @@ The main game logic is implemented in `hxp_gameInputLoop` (originally `hxp_tASb`
 First, the game checks for the winning state as mentioned above and stops with outputting the win Pdf then.
 Otherwise, it first checks the enemy map `qwsI` (entries with room, direction and id) and ends with the death of the player upon encounter.
 Then, it outputs noises from some direction for one to three close enemies and from all directions if there are enemies in all four adjacent rooms.
-Afterwards, it handles items and lock rooms.
+Afterward, it handles items and lock rooms.
 First, it uses the item map `NHmX` (position and id) to output all key items in the current room.
 Then, the game prints the carried items from the map `rzVB`.
 Finally, it looks up the room in the lock map `vpAZ` (position, corresponding key and id) offers the player to place the key if available.
 The ids are used to load the names from the list `VljH`, by the way.
-After completing all this information steps, the game handles player input for that step.
+After completing all these information steps, the game handles player input for that step.
 The normal moves permit moving forward and turning left, right and around.
 Also, you could always give up to end the game directly.
 If available, the player can also pick up an item or place it as a key instead of moving.
 The second action, as already mentioned, starts the next of 25 rounds.
 Finally, the game handles enemy movement.
-Basically, it moves all enemies in their direction (or leaves them where they are for direction `00`) with the exception of enemies that would cross the player in the doorway.
-In that case, the enemy just awaits the player in their room the next turn.
+Basically, it moves all enemies in their direction (or leaves them where they are for direction `00`) except for enemies that would cross the player in the doorway.
+In that case, the enemy just awaits the player in their room on the next turn.
 
 This loop game runs 450 times and warns five rounds before the ceiling breaks in with the text "The ground shakes. Cracks appear in the walls.".
-So we need to be pretty quick to pick up the required keys already to finish.
+So we already need to be pretty quick to pick up the required to finish.
 To get a better feel of the game (and because I had some free time) I wrote a small visualizer for the game.
 Of course, that required the movement code of the game.
-All in all, it is pretty straight forward (but still not easy to read):
+All in all, it is pretty straightforward (but still not easy to read):
 
 - The variable `EdWG` maps an index to the current position of the room
 - There are 6 additional, stationary rooms
-- Moving uses three axis, in total implemented in 6 maps of adjacent rooms (pairs for forward and backward)
-- Turning left and right changes the axis according two other maps
+- Moving uses three axes, in total implemented in 6 maps of adjacent rooms (pairs for forward and backward)
+- Turning left and right changes the axis according to two other maps
 - Turning around flips the last direction bit
 
-The three axis already hint to the structure of the map: a three by three cube.
+The three axes already hint at the structure of the map: a three-by-three cube.
 In fact, they represent a Rubik's cube where the permutations after each round are solving steps turning the cube.
 (I often forget to search stuff like those permutation numbers but at least that information isn't vital for solving the challenge.)
 We have to load the new variables after each round and possibly turn the player if its field turns for a full simulation.
@@ -207,18 +208,18 @@ Having understood all this, we can play the game and start looking for the actua
 
 ### Solving the maze
 
-I will explain my solution in a bit more detail the author but I did finally look at their writeup before writing my solve scripts to avoid unnecessary delays.
+I will explain my solution in a bit more detail than the author but I did finally look at their writeup before writing my solve scripts to avoid unnecessary delays.
 Having already spent many hours on this challenge, I believe this was the correct decision.
 So, how do we write a solution for this game challenge?
 
-Looking at the game win check again, we will see that it uses the content of the variable `when calculating the Pdf output.
-According to the author, they decrypt the Pdf here and from analyzing the usages of` we can see it stores the actions of the player.
+Looking at the game win check again, we will see that it uses the content of the variable `kyHu` when calculating the Pdf output.
+According to the author, they decrypt the Pdf here and from analyzing the usages of `kyHu` we can see it stores the actions of the player.
 Now, the only hint we have is the action limit but we can imagine the author wants the smallest possible sequence.
 
 But first, how do we solve the Rubik's cube with the permutations provided?
 In theory, there are multiple solutions to do this.
 The author sneakily put enemies at all the positions of lock rooms but one in the next round though and we would notice that if we'd choose the wrong one.
-However, the correct room is always the first so the odds are pretty high you would choose the correct one anyway.
+However, the correct room is always the first so the odds are pretty high that you would choose the correct one anyway.
 
 I then wrote a small script to calculate the required keys and when we need to pick them up.
 It turns out we will have to pick up a lot more keys in the first few rounds since they aren't available later.
@@ -309,7 +310,7 @@ print(gathered)
 
 Now, to get the shortest path for each round we can implement a quick BFS just as the author suggests.
 We need to include our position the enemy movement (I stored the step count modulo 12 for this and checked before adding a move) and the items we picked up.
-In python, I had to encode this state as a string (you could use any hashable type though) to be able to reconstruct the path afterwards.
+In python, I had to encode this state as a string (you could use any hashable type though) to be able to reconstruct the path afterward.
 Then, we can output all the required inputs for this path and run the game with those inputs.
 I had to close my script though because the game wouldn't otherwise.
 So I entered the container first and extracted the result Pdf after closing my program.
@@ -454,7 +455,7 @@ for ROUND in range(25):
         if len(keys) != len(pickup[ROUND]):
             print("Oh no, double items?")
             exit(1)
-    
+
     path = bfs(graph, start, end, g, keys)
     ACTION_COUNT += len(path)-1
 
@@ -524,15 +525,15 @@ After all this effort to get here, it is actually quite fitting that our last ac
 
 Where flag? You surely noticed that I didn't mention it above.
 This is, sadly, because my solution does not get the flag but only a randomly colored image...
-I am not sure that this is my fault however, since there are actually multiple shortest paths through the maze.
-Take the first round for example: it contains two items to pick up in adjacent rooms and we could that in either order without changing the length of our solution.
+I am not sure that this is my fault, however, since there are actually multiple shortest paths through the maze.
+Take the first round for example: it contains two items to pick up in adjacent rooms and we could do that in either order without changing the length of our solution.
 So it is probably for the better that no team seemed to come close to solving this challenge.
 It would have been a big drama to notice this problem after hours of work and stress ¯\_(ツ)\_/¯.
 
-In theory, my solver might produce different results for different graph generation and depending on prioritization of items or movement.
-I did not want to try finding the authors solution by chance though since they didn't provide their sequence in their writeup.
+In theory, my solver might produce different results both for different graph generations and depending on the prioritization of items or movement.
+I did not want to try finding the author's solution by chance though since they didn't provide their sequence in their writeup.
 
-I liked playing this challenge in spite of its problems and even though it annoyed me every once in a while at the same time.
+I liked playing this challenge despite its problems and even though it annoyed me every once in a while at the same time.
 Was it really a good idea to put it in a CTF?
 I am probably not the best to judge that since other teams have come a lot closer to actually solving the challenge in time.
 However, I still believe it was just too big of a challenge and it sadly lacked a bit of testing.
