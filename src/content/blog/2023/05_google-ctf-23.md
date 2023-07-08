@@ -15,7 +15,7 @@ excerpt: "A year ago I started my journey here with a misc and a web challenge. 
 </script>
 
 Two weeks ago, after being busy organizing our second event, [GPN CTF 2023](https://ctftime.org/event/1965), my team [KITCTF](https://kitctf.de) finally had time to fully participate in a CTF.
-And since we like the challenge, what better CTF could there be than Google Capture the Flag 2023?!
+And since we like the challenge, what better CTF could there be than Google Capture The Flag 2023?!
 
 Funny enough, I started to really dive deep into cybersecurity and CTFs with last year's Google CTF 22 and managed to solve two challenges ([misc](https://kitctf.de/writeups/appnote) and [web reversing](https://kitctf.de/writeups/jssafe)) then. 
 In the past year I learned a lot about reversing and lately pwning so this year I worked on the binary rev/pwn challenges [oldschool](#oldschool) and [UBF](#ubf).
@@ -38,12 +38,12 @@ The challenge provides us with a 32-bit crackme binary and a python script conta
 A crackme is a small program designed to test your reversing skills in a legal way.
 They often require finding secret data and understanding their authentication schema to obtain access.
 The page crackmes.de referenced in the description was a website that hosted many such challenges until 2016 (shutdown because of legal issues).
-Currently, the page [crackmes.one](https://crackmes.one/) host many of the original crackmes.de challenges as well as new ones, in case you like to try them out.
+Currently, the page [crackmes.one](https://crackmes.one/) hosts many of the original crackmes.de challenges as well as new ones, in case you like to try them out.
 
 The binary uses the [ncurses](https://invisible-island.net/ncurses/announce.html) library that provides a terminal-independent UI programming API.
 Thus you may need to install the 32-bit ncurses package to execute the library.
 Also, the binary seems to require a certain screen size so I needed to decrease the terminal font size a bit to get past this error.
-If everything is working fine you should see an window similar to this:
+If everything is working fine you should see a window similar to this:
 
 ![oldschool login screen]({oldschool_login_screen})
 
@@ -52,7 +52,7 @@ Thus, I fired up my debugger and tried to execute the program while it was loadi
 I used ghidra for this challenge which works fine but I have to warn you that the main method will take a few minutes to load on every edit.
 Although it repeats the error cases to free ncurses resources it does produce an otherwise quite readable result.
 Binary ninja is a lot quicker but did nest every error check which produced a lot of nesting levels.
-In the end, you should probably stick to the tools your used to anyway.
+In the end, you should probably stick to the tools you're used to anyway.
 
 I tried looking through the main method linearly at first but quickly abandoned this approach as it is just too big.
 Then I looked at the imported library methods and found the method [`new_field`](https://manpages.debian.org/testing/ncurses-doc/new_field.3form.en.html) which is used to create six fields.
@@ -69,7 +69,7 @@ However, the most important check is an equation at the end of the function that
 ![Structure of the `password_check` method]({oldschool_password_check_flow})
 
 The values from the password are the indices in a string of valid characters: `"23456789ABCDEFGHJKLMNPQRSTUVWXYZ"`.
-As every string in the binary it is stored as two byte arrays that are XORed to get the real string.
+As every string in the binary, it is stored as two byte arrays that are XORed to get the real string.
 The values in this initial `password_list` are then remapped via a shuffle map, XORed with map of values by their position in the list and finally rotated right in blocks of 5 depending on the index of the block (no change on block 0, block 1 rotated right by one and so on).
 Now, I didn't look at the computation of the `username_list` in detail because we know the usernames and can just copy the code.
 The final equation for checking password and username is generated like this:
@@ -112,7 +112,7 @@ The modifications on the global variables are as follows:
 - If the `ptrace_bit` is set, the `USERGEN_BASE` value is increased by 7
 
 With these modifications included my script produced satisfiable equations for a few selected usernames under default circumstances.
-So i finished my solver and generated the passwords for all usernames in the `flag_maker.py` to get the flag.
+So I finished my solver and generated the passwords for all usernames in the `flag_maker.py` to get the flag.
 
 ```py
 import subprocess
@@ -266,7 +266,7 @@ void censor_string(char *input,int length)
 
 Our ultimate goal for this challenge is to use variable expansion to get the flag string and somehow avoid it being censored.
 Because of the check in the `censor_string()` function we can do so by first sending a string array and then a boolean array and using the vulnerability we found to change one of the `'CTF{'`-bytes to `0x01`.
-Even better, we can overwrite the length short at the start of the data buffer with `0x01` with disables the check in this method and still gives us the whole string because it is printed with `snprintf()` and `%s` ignoring the supposed length.
+Even better, we can overwrite the length short at the start of the data buffer with `0x01` which disables the check in this method and still gives us the whole string because it is printed with `snprintf()` and `%s` ignoring the supposed length.
 To consistently place the two allocated heap blocks for the entries at a fixed offset from each other on the stack we can set the same initial buffer size.
 This is because heap allocation strategies typically place blocks of the same size together to utilize memory space as best as possible.
 See the memory dump below to understand the offset:
