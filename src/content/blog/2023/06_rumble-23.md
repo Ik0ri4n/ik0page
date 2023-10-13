@@ -7,12 +7,14 @@ excerpt: 'After the forced pause this years edition of the CyberSecurityRumble f
 	import Challenge from '$lib/components/Challenge.svelte';
 
     let exterminate_downloads = ["/blog/2023/06_rumble-23/exterminate.apk"];
-    let pcas_downloads = ["/blog/2023/06_rumble-23/pcas.zip"];
+    let pcas_downloads = ["/blog/2023/06_rumble-23/pcas", "/blog/2023/06_rumble-23/pcas_source.zip"];
 
     import exterminate_main_activity from "$lib/assets/2023/06_rumble-23/exterminate_main_activity.png";
     import exterminate_isCodeCorrect1 from "$lib/assets/2023/06_rumble-23/exterminate_isCodeCorrect1.png";
     import exterminate_isCodeCorrect2 from "$lib/assets/2023/06_rumble-23/exterminate_isCodeCorrect2.png";
-    //import pcas_ from "$lib/assets/2023/06_rumble-23/";
+    import pcas_airport_session from "$lib/assets/2023/06_rumble-23/pcas_airport_session.svg";
+    import pcas_load_plane from "$lib/assets/2023/06_rumble-23/pcas_load_plane.png";
+    import pcas_do_work from "$lib/assets/2023/06_rumble-23/pcas_do_work.png";
 </script>
 
 - Short description of competition? (Teams of 6, 24h qualifier, onsite finals)
@@ -148,69 +150,77 @@ It did help to look at the problem again with fresh energy later though and we g
 
 ## PCaS
 
-<Challenge name="PCaS" author="lukas" category="rev" solves={1} points={600} flag="CSR&lbrace;&rbrace;" downloads={pcas_downloads}>
+<Challenge name="PCaS" author="lukas" category="rev" solves={1} points={600} flag="CSR&lbrace;1_hop3_y0u_4lso_l1ke_alg0rithm5&rbrace;" downloads={pcas_downloads}>
 I've heard critical aircraft performance data computations need to be done in the cloud nowadays using coding and algorithms. What could possibly go wrong?
 </Challenge>
 
-- Dropped a few hours before end
-  - Some (including me) already had worked through the night
-  - Managed to get first and only solve with team work
-- .net C# binary
-  - Contains dotnet information etc.
-  - Can sometimes be decompiled with dotPeek, ILSpy etc.
-  - 23 got us good result from dotPeek with C# files
-- Airport controller
-  - Processing of planes from loading to takeoff
-  - Can generate a session ticket and than connect with ticket to same airport later
-- Airport session
-  - Goal to get flag, sadly as apology for inconvenience if all three runways are blocked with crashed airplanes
-  - Gets free runway from airport
-  - Session is big state machine after first/welcome message (draw as diagram)
-    - WaitingForPlane:
-      - Provide callsign (format; SPIN reference)
-      - Get plane data (runway, number of containers, max takeoff weight) & reserve runway
-    - PlaneAssigned:
-      - Provide cargo data (weight and value separated by space, "END" after last line)
-      - Minimum number of containers `NumberOfContainers / 2`
-      - Loading plane (in class `Airport`; look at it in detail below)
-      - Timeout if loading takes too long
-      - Loaded, requesting taxi clearance (can be granted or denied, depends on runway availability)
-    - WaitingForTaxi
-      - State to retry requesting taxi clearance
-      - Can cancel flight too (resets runway to state `Free`)
-    - Taxiing
-      - Attempts takeoff
-      - Crash if loaded more than max takeoff weight
-    - Takeoff/Crashed:
-      - Final states
-      - Simply urges user on before closing connection
-  - Important points
-    - Loading
-    - Crash check at takeoff
-    - Important stuff happens in `Airport`
-- Loading plane
-  - Code snippets for methods?
-  - Starts thread with `DoWork` and waits for signal to retrieve result
-  - Thread tries solving knapsack problem with `Solver` in `DoWork`, sets result and then signal
-  - Solver guarantees result below max weight
-- Race condition
-  - Not made for simultaneous processing of multiple planes
-  - Can connect multiple times with ticket and to same runway though, runway only reserved in `GetPlane`
-  - Can start load at same time, first result set for all planes
-  - Abuse this for our exploit
-- Exploit
-  - Spawn several connections including reserve connection
-  - Send callsign for all but reserve (format; SPIN reference)
-  - Get plane data
-  - Send problem depending on max weight
-    - More difficult problem for connections with small max weight (fraction of max weight, full number of containers)
-    - Simple one for large max weight (minimum possible number, all max weight already)
-  - Start simultaneously
-  - Collect load configurations to find overloaded plane
-  - If found check clearance
-    - Possibly finish takeoff of wrong plane and cancel rest (resets to runway state free)
-    - Set runway state to reserved again with reserve connection (sending callsign now)
-    - Request clearance for overloaded plane
-  - Try takeoff and crash overloaded plane at runway
-  - Retry until all runways are blocked and we get the flag
-  - Solve script
+This challenge was released with the final batch of challenges of the qualifiers, 6 hours before end.
+Some of our team (including, but not limited to, me) had already worked pretty much through the night, 
+but we anticipated the challenges eagerly.
+Thankfully, we managed to get the first and only solve for this challenge with great team work.
+
+The challenge provides us with a .NET Core C# binary (for example see all the .NET symbols with `strings`).
+With luck, you can decompile such binaries with tools like dotPeek or ILSpy.
+[Liam](https://wachter-space.de) quickly realized this and exported an archive of C# files from dotPeek for us.
+
+Interacting a bit with the program (you can connect to a local instance at port 3284) we can generate a session ticket and are then greeted by the system:
+
+> Welcome to Campbell Airstrip, Anchorage.
+>
+> Runway 1 is available. Please provide a callsign:
+
+With the challenge description I already found a reference to the name [PCaS](https://en.wikipedia.org/wiki/Portable_collision_avoidance_system), 
+setting the theme for the challenge.
+Specifically, the challenge is implemented as a kind of airport controller, processing planes from loading to takeoff.
+
+Looking at `AirportSession.cs`, we find that we (sadly) get the flag as an apology if all runways are blocked with crashed airplanes.
+The `AirportSession` is a big state machine handling the flow of processing a plane (see diagram).
+
+![AirportSession processing state machine]({pcas_airport_session})
+
+The processing contains some important information:
+
+- Callsigns must match the regex `r"^[A-Z]{3}[A-Z0-9]{1,}$"`
+- Plane data contains runway, number of containers & max takeoff weight
+- We need to provide a minimum of `NumberOfContainers / 2`, to stay economical of course
+- Loading can run into a timeout
+- There is a crash check at takeoff
+
+![LoadPlane function in Airport]({pcas_load_plane})
+
+The most important logic is implemented in `Aiport.cs` though.
+When loading a plane, the `LoadPlane` method starts a worker thread and weights for a signal before retrieving and returning the result.
+The method `DoWork` tries to get the optimal loading configuration with a greedy knapsack solver and is cancelled after 15 seconds.
+Sadly, the `Solver` does enforce the maximum takeoff weight.
+When the worker thread gets a result, it sets a static `_result` variable and then sets the signal.
+
+![DoWork function in Airport]({pcas_do_work})
+
+Notably, all the `Airport` code is implemented with threads but is not designed to simultaneously process multiple planes at the same `Airport`.
+We can however connect multiple times to the same aiport with our ticket, 
+even to the same runway because it only reserved in `Airport.GetPlane`, after providing a callsign in the session.
+Thus we can start loading multiple planes at nearly the same time, and the first completed result will be set for all planes.
+We abuse this race condition for our exploit.
+
+Our exploit strategy is as follows:
+
+- Spawn several connections including reserve connection
+- Send callsign for all but reserve (I had to use "SPIN", maybe you'll get the reference)
+- Get plane data
+- Send problem depending on max weight
+  - More difficult problem for connections with small max weight (fraction of max weight, full number of containers; not too complex because of timeout)
+  - Simple one for large max weight (minimum possible number, all max weight already; quick solve)
+- Start simultaneously
+- Collect load configurations to find overloaded plane
+- If found check clearance
+  - Possibly finish takeoff of wrong plane and cancel rest (resets to runway state `Free` 😬)
+  - Set runway state to reserved again with reserve connection (sending callsign now)
+  - Request clearance for overloaded plane
+- Try takeoff and crash overloaded plane at runway
+- Retry until all runways are blocked and we get the flag
+
+I felt the need to write a well structured exploit for this problem to avoid implementation problems, 
+but that is of course handy for sharing the solution with you.
+You'll find it as my [PCaS exploit gist](https://gist.github.com/Ik0ri4n/8bea87b96cff96316ee857058695eee0), 
+you'll need to replace `rumble.host` with `localhost` though.
+Big thanks to Lukas, the author, I really enjoyed analyzing the challenge and implementing the exploit!
