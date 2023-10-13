@@ -1,6 +1,6 @@
 ---
 title: CyberSecurityRumble Quals & Finals 2023
-excerpt: 'After the forced pause this years edition of the CyberSecurityRumble finally returned with an onsite finals event. '
+excerpt: "After the forced pause this years edition of the CyberSecurityRumble finally returned with an onsite finals event. Let's look back at two interesting challenges!"
 ---
 
 <script lang="ts">
@@ -17,9 +17,18 @@ excerpt: 'After the forced pause this years edition of the CyberSecurityRumble f
     import pcas_do_work from "$lib/assets/2023/06_rumble-23/pcas_do_work.png";
 </script>
 
-- Short description of competition? (Teams of 6, 24h qualifier, onsite finals)
-- Exterminate: Easy android challenge from finals
-- PCaS: Bonus, medium challenge from quals I really enjoyed
+The CyberSecurityChallenge is a high quality CTF, specifically meant for the DACH community with a separate scoreboard and finals for the best DACH teams.
+Interestingly, the CSR is intended for teams of 6 which is difficult to enforce for an online competition but perfect for onsite finals.
+The qualifiers were a 24-hour competition with a great mix of challenges,
+keeping the tension up with an additional batch of challenges released later into the competition.
+Finally, the onsite finals had a competition with challenges made ba the sponsors and another great jeopardy CTF.
+
+I participated with an active team from [KITCTF](https://kitctf.de) and we managed to score a close second place in the qualifiers 
+and got the fourth place at the finals.
+As last year, I really enjoyed the competition and meeting the other teams in Bonn for the finals made for a wonderful atmosphere.
+For this post, I included a writeup for [Exterminate](#exterminate), a relatively easy android reversing challenge from the finals.
+As a bonus, I finished a full writeup for [PCaS](#pcas) I had lying around for a few months now.
+I really enjoyed the challenges and I hope you can share my excitement for reversing with these two writeups!
 
 ## Exterminate
 
@@ -35,7 +44,7 @@ The other activity however, in the `CodeActivity` class, contains a code input f
 The button on-click listener is defined as an external synthetic lambda, suggesting a JNI call.
 We find corresponding libraries at the path `./resources/lib/<arch>/libexterminate.so` which we can analyze with the decompiler of our choice (in my case ghidra).
 
-<div class="h-96 relative [&>*]:flex [&>*]:h-full">
+<div class="h-96 relative [&>*]:flex [&>*]:h-full [&>*>img]:my-0">
 
 ![Exterminate CountdownActivity screenshot]({exterminate_main_activity})
 
@@ -224,3 +233,4 @@ but that is of course handy for sharing the solution with you.
 You'll find it as my [PCaS exploit gist](https://gist.github.com/Ik0ri4n/8bea87b96cff96316ee857058695eee0), 
 you'll need to replace `rumble.host` with `localhost` though.
 Big thanks to Lukas, the author, I really enjoyed analyzing the challenge and implementing the exploit!
+Also thanks to [Martin](https://blog.martinwagner.co/) for supporting me with the edge cases and helping me keep my sanity.
