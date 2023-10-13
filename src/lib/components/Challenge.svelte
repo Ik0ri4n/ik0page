@@ -31,7 +31,7 @@
 			<p class="mb-2">{author}</p>
 		</span>
 		<p class="ml-auto mr-4 mb-2 font-bold text-purple-700 dark:text-orange-500">
-			{solves} solves / {points} points
+			{solves} solve{solves > 1 ? "s" : ""} / {points} points
 		</p>
 	</div>
 	<slot />
