@@ -199,7 +199,7 @@ The processing contains some important information:
 
 The most important logic is implemented in `Aiport.cs` though.
 When loading a plane, the `LoadPlane` method starts a worker thread and weights for a signal before retrieving and returning the result.
-The method `DoWork` tries to get the optimal loading configuration with a greedy knapsack solver and is cancelled after 15 seconds.
+The method `DoWork` tries to get the optimal loading configuration with a branch and bound knapsack solver and is cancelled after 15 seconds.
 Sadly, the `Solver` does enforce the maximum takeoff weight.
 When the worker thread gets a result, it sets a static `_result` variable and then sets the signal.
 
