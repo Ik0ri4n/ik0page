@@ -1,6 +1,6 @@
 /// <reference types="@sveltejs/kit" />
 declare module '*.md' {
-	export { SvelteComponentDev as default } from 'svelte/internal';
+	export { SvelteComponent as default } from 'svelte';
 	export const metadata: Record<string, any>;
 }
 
