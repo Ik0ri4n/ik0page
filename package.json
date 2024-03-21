@@ -4,7 +4,6 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"prebuild": "npm run generate:metadata",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
