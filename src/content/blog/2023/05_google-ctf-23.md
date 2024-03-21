@@ -66,7 +66,7 @@ The `password_check` contains a few error cases regarding the format of username
 For example, a username must consist of at least five blocks of four characters and the password too, though separated by hyphens.
 However, the most important check is an equation at the end of the function that uses a list of 25 values computed from the username and 25 others from the password.
 
-![Structure of the `password_check` method]({oldschool_password_check_flow})
+![Structure of the password_check method]({oldschool_password_check_flow})
 
 The values from the password are the indices in a string of valid characters: `"23456789ABCDEFGHJKLMNPQRSTUVWXYZ"`.
 As every string in the binary, it is stored as two byte arrays that are XORed to get the real string.
@@ -90,6 +90,7 @@ result = 1;
 ```
 
 The resulting strategy for finding the password to a given username I used was as follows:
+
 1. Generate `username_list` from name
 2. Solve equation for modified `password_list` with `z3`
 3. Undo the modifications in reverse order to get password

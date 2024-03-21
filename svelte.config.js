@@ -16,7 +16,7 @@ const config = {
 
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: [sveltePreprocess(), mdsvex(mdsvexConfig)]
+	preprocess: [mdsvex(mdsvexConfig), sveltePreprocess()]
 };
 
 export default config;

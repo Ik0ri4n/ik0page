@@ -9,19 +9,19 @@ excerpt: "As it is my main field of interest currently, I mainly worked on rever
     let parallelism_downloads = ["/blog/2023/02_dice-ctf-23/parallelism"];
     let nbparallelism_downloads = ["/blog/2023/02_dice-ctf-23/pppp", "/blog/2023/02_dice-ctf-23/flag.out"];
 
-    import parallel_gather from "$lib/assets/2023/02_dice-ctf-23/parallel_gather.png"
-    import parallel_main from "$lib/assets/2023/02_dice-ctf-23/parallel_main.png"
-    import parallel_scatter from "$lib/assets/2023/02_dice-ctf-23/parallel_scatter.png"
-    import parallel_shuffle from "$lib/assets/2023/02_dice-ctf-23/parallel_shuffle.png"
-    import nbparallel_accesses_first from "$lib/assets/2023/02_dice-ctf-23/nbparallel_accesses_first.png"
-    import nbparallel_accesses_second from "$lib/assets/2023/02_dice-ctf-23/nbparallel_accesses_second.png"
-    import nbparallel_barrier from "$lib/assets/2023/02_dice-ctf-23/nbparallel_barrier.png"
-    import nbparallel_encryption_first from "$lib/assets/2023/02_dice-ctf-23/nbparallel_encryption_first.png"
-    import nbparallel_encryption_second from "$lib/assets/2023/02_dice-ctf-23/nbparallel_encryption_second.png"
-    import nbparallel_main from "$lib/assets/2023/02_dice-ctf-23/nbparallel_main.png"
-    import nbparallel_run from "$lib/assets/2023/02_dice-ctf-23/nbparallel_run.png"
-    import nbparallel_signature from "$lib/assets/2023/02_dice-ctf-23/nbparallel_signature.png"
-    import nbparallel_thread_constructor from "$lib/assets/2023/02_dice-ctf-23/nbparallel_thread_constructor.png"
+    import parallel_gather from "$lib/assets/2023/02_dice-ctf-23/parallel_gather.png";
+    import parallel_main from "$lib/assets/2023/02_dice-ctf-23/parallel_main.png";
+    import parallel_scatter from "$lib/assets/2023/02_dice-ctf-23/parallel_scatter.png";
+    import parallel_shuffle from "$lib/assets/2023/02_dice-ctf-23/parallel_shuffle.png";
+    import nbparallel_accesses_first from "$lib/assets/2023/02_dice-ctf-23/nbparallel_accesses_first.png";
+    import nbparallel_accesses_second from "$lib/assets/2023/02_dice-ctf-23/nbparallel_accesses_second.png";
+    import nbparallel_barrier from "$lib/assets/2023/02_dice-ctf-23/nbparallel_barrier.png";
+    import nbparallel_encryption_first from "$lib/assets/2023/02_dice-ctf-23/nbparallel_encryption_first.png";
+    import nbparallel_encryption_second from "$lib/assets/2023/02_dice-ctf-23/nbparallel_encryption_second.png";
+    import nbparallel_main from "$lib/assets/2023/02_dice-ctf-23/nbparallel_main.png";
+    import nbparallel_run from "$lib/assets/2023/02_dice-ctf-23/nbparallel_run.png";
+    import nbparallel_signature from "$lib/assets/2023/02_dice-ctf-23/nbparallel_signature.png";
+    import nbparallel_thread_constructor from "$lib/assets/2023/02_dice-ctf-23/nbparallel_thread_constructor.png";
 </script>
 
 Last weekend we participated in [DiceCTF](https://ctftime.org/event/1838) with [KITCTF](https://kitctf.de/) and achieved a solid 16th place together.
