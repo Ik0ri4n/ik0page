@@ -21,6 +21,8 @@ export const getFolder = (path) => {
 	return folder;
 };
 
+console.log(execSync('git --version').toString('utf-8'));
+
 const added = execSync('git diff main --name-only --diff-filter=A src/content/blog/').toString(
 	'utf-8'
 );
