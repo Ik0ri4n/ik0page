@@ -1,5 +1,5 @@
 import { Post, PostInfo } from '$lib/types/post';
-import type { SvelteComponent } from 'svelte';
+import type { ComponentType } from 'svelte';
 
 const getSlug = (path: string): string => {
 	const slug = path.split('/').pop()?.split('.').shift()?.split('_').pop();
@@ -33,11 +33,14 @@ const getFolder = (path: string): string => {
 export const getPost = async (
 	slug: string
 ): Promise<{
-	Content: SvelteComponent;
+	Content: ComponentType;
 	meta: Post;
 }> => {
 	const slugToPath = new Map();
-	const paths = import.meta.glob('../../content/blog/**/*.md', { query: '?url', import: 'default' });
+	const paths = import.meta.glob('../../content/blog/**/*.md', {
+		query: '?url',
+		import: 'default'
+	});
 	Object.keys(paths).forEach(async (path) => {
 		const regex = /.*\/content\/blog\/([0-9]{4})\/(.+)\.md/;
 		const parts = path.match(regex);
@@ -79,7 +82,9 @@ export const getPosts = async (): Promise<PostInfo[]> => {
 	const posts = await Promise.all(
 		Object.keys(mdModules).map(async (path) => {
 			const { metadata } = await mdModules[path]();
-			const generated = await import(`$lib/generated/blog/${getFolder(path)}/${getName(path)}.json`);
+			const generated = await import(
+				`$lib/generated/blog/${getFolder(path)}/${getName(path)}.json`
+			);
 
 			return new PostInfo(
 				metadata.title,

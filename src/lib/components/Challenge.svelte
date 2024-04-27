@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { ArrowSmDownIcon } from '@rgossiaux/svelte-heroicons/solid';
-
-	import { Switch } from '@rgossiaux/svelte-headlessui';
-	import CopyToClipboard from './CopyToClipboard.svelte';
+	import { ArrowSmDownIcon } from '@rgossiaux/svelte-heroicons/outline';
+	import RevealableText from './RevealableText.svelte';
 
 	export let name: string;
 	export let category: string;
@@ -38,19 +36,10 @@
 	</div>
 	<slot />
 
-	<p class="text-ellipsis overflow-hidden">
-		Flag:
-		<Switch checked={enabled} on:change={(e) => (enabled = true)} class="">
-			<span class="sr-only">Click to reveal flag</span>
-			{#if enabled}
-				<span class="font-mono">
-					<CopyToClipboard text={flag}></CopyToClipboard>
-				</span>
-			{:else}
-				<span class="bg-gray-900 font-mono text-transparent rounded-sm" title="Click to reveal">{'_'.repeat(flag.length)}</span>
-			{/if}
-		</Switch>
-	</p>
+	<div class="not-prose mb-4">
+		<p class="text-sm font-medium mb-1">Flag:</p>
+		<RevealableText description="flag" value={flag}/>
+	</div>
 	{#if downloads.length > 0}
 		<div class="not-prose">
 			<ul class="flex flex-row flex-wrap">
