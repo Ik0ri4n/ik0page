@@ -1,5 +1,6 @@
 <script>
 	import Header from '$lib/components/Header.svelte';
+	import Toaster from '$lib/components/Toaster.svelte';
 	import '$lib/styles/app.css';
 </script>
 
@@ -10,3 +11,7 @@
 		<slot />
 	</div>
 </main>
+
+<div class="fixed bottom-0 left-0 right-0 pointer-events-none">
+	<Toaster />
+</div>
