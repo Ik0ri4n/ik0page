@@ -6,7 +6,7 @@
 
 	export let name: string;
 	export let category: string;
-	export let author: string;
+	export let author: string|undefined;
 	export let solves: number;
 	export let points: number;
 	export let flag: string;
@@ -28,7 +28,9 @@
 	>
 		<span class="mr-4">
 			<h3 class="font-bold text-gray-900 dark:text-gray-50">{category} / {name}</h3>
-			<p class="mb-2">{author}</p>
+			{#if author}
+				<p class="mb-2">{author}</p>
+			{/if}
 		</span>
 		<p class="ml-auto mr-4 mb-2 font-bold text-purple-700 dark:text-orange-500">
 			{solves} solve{solves > 1 ? "s" : ""} / {points} points
