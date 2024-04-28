@@ -19,31 +19,31 @@ excerpt: 'A crackme that uses ROP?! You have to take a look at this challenge, t
 </script>
 
 A week ago, I played this years Midnight Sun Qualifiers with my team [KITCTF](https://kitctf.de).
-While we finished as 19th and thus didn't qualify for the finals this time we had a blast. 
+While we finished as 19th and thus didn't qualify for the finals this time, we still had a blast. 
 I especially enjoyed the challenge `roprot` that I solved together with OfficialBenko and I'm sure you will too.
 
 ## roprot
 
-<Challenge name="roprot" author="quend" category="rev" solves={1} points={1} flag="midnight&lbrace;r0pP1nG_7hr0uGh_rand()&rbrace;" downloads={download}>
+<Challenge name="roprot" author="quend" category="rev" solves={35} points={227} flag="midnight&lbrace;r0pP1nG_7hr0uGh_rand()&rbrace;" downloads={download}>
 Unlocking this binary's secrets is the key to your success. Can you find the right combination?
 </Challenge>
 
 The challenge download contains two files: a tool and the challenge binary itself.
-We ultimately didn't need the tool for our solve but it's a nice to have.
+We ultimately didn't need the tool for our solve because it is too slow but it's a nice-to-have.
 The challenge binary itself is a 64-bit stripped and dynamically linked ELF crackme, nothing special so far.
-It takes a license string as a command-line argument, does some setup (we'll talk about that later) and then performs the license check itself.
+It takes a license string as a command-line argument, does some setup (we'll look at that later) and then performs the license check itself.
 
 ### License check
 
-Firstoff, the check verifies the format of the license key.
-It must be of length 18 (magenta highlight) and every fifth character must be '-' (white highlight), so we get 4 blocks of 4 chars.
+First off, the check verifies the format of the license key.
+It must be of length 18 (magenta highlight) and every fifth character must be `'-'` (white highlight), so we get 4 blocks of 4 chars.
 
 ![license check function]({check_license})
 
-The characters in these blocks are checked to be either uppercase alphabetic or numeric characters.
-In case you haven't come across such a check before, they are implemented via locale tables containing the bit characteristics for every codepoint (see code below; watch out with endianness).
+The characters in these blocks are checked to be either uppercase alphabetic characters or numeric characters.
+In case you haven't come across such a check before, they are implemented via [locale tables](https://refspecs.linuxbase.org/LSB_3.0.0/LSB-Core-generic/LSB-Core-generic/baselib---ctype-b-loc.html) containing the characteristics for every character of a charset (see code below; watch out with endianness).
 These alphanumeric characters form a base-36 number which is converted to decimal (orange highlight).
-Excess bits are discarded here because of the implementation with `shl`.
+Excess bits are discarded here because of the multiplication implementation with `shl`.
 After the last character has been read, the lower and upper 32 bits are combined with XOR and compared against a hash value (cyan highlight).
 If equal the XOR-reduced key value is then used to set our random seed with `srand`.
 We can thus only use the least significant 32 bits and set the remaining characters to 0 when converting a number back to a license key.
@@ -95,10 +95,11 @@ With this executable buffer and another buffer it then calls a function I called
 
 This function copies an array of constant offsets to our ROP stack and then sets the stack pointer to our ROP stack and returns.
 Thus, it essentially starts a ROP chain with specific addresses in a bunch of random data.
-ROP gadgets are small, containing only one or two instructions, often only a few bytes long, e.g., `pop rdi; pop rsi; ret`.
-Larger gadgets are very unlikely since they have to generated like that in a buffer of random data.
+ROP gadgets are usually small, containing only one or two instructions, and often only a few bytes long, e.g., `pop rdi; pop rsi; ret` (3 bytes).
+Large gadgets are very unlikely since they have to generated like that in a buffer of random data.
 As such, we can check that the ROP offsets are followed by a return instruction (byte `0xc3`) after a few bytes (we used around 16 bytes to account for large instructions).
-There are two especially small addresses, `0x24a` and `0x54b`, that we used for this check.
+There are two especially small addresses in our ROP chain, `0x24a` and `0x54b`, that we used for this check.
+
 I implemented a parallelized script to quickly find the remaining options for our license key.
 You can run it with `mpicc -o parallel -O3 parallel.c` and `mpirun -np 8 ./parallel > ./out.txt` to quickly get those 206 seeds (ca. 20s on my laptop).
 
@@ -204,17 +205,16 @@ int main(int argc, char **argv)
 }
 ```
 
-The fact that we can't know the exact license key and don't know much about what will happen in that code is kind of unfortunate for us.
+The fact that we can't know the exact license key and don't know much about what will happen in the ROP chain code is kind of unfortunate for us.
 We can make an educated guess though: it will very likely print something like `"Correct: <flag>"`.
 
 ![GIF with FAIL challenge output]({output})
 
-When we look at the setup function, we see that signals like `SIGSEGV` and `SIGILL` are handled by printing the fail message.
-This also supports our theory that we get text output for the correct key too.
+When we look at the setup function, we see that signals like `SIGSEGV` and `SIGILL` are handled by printing the fail message too.
 
 ![setup function]({setup})
 
-The function I called `print_verify_message()` is responsible for the long delay before actually starting the app.
+The function I called `print_verify_license()` is responsible for the long delay before actually starting the app.
 We can remove that call with a quick patch and then just get the output for our 206 license keys in a few minutes.
 
 ```py
@@ -256,10 +256,12 @@ After about 5 minutes (without parallelization here...) we have a flag in our ou
 
 ![flag in output log]({flag_output})
 
+In case you want to try it out yourself, one valid license key is `0000-0000-00Y9-0SOR`.
+
 ## Final thoughts
 
 I found the idea to use ROP on a buffer of random data pretty ingenious.
-That was the first time I saw someone do that and I really enjoyed playing around with the challenge although our solve ultimately was a (slightly intelligent) brute force attack.
+That was the first time I saw someone do that and I really enjoyed playing around with the challenge even though our solve ultimately was just a (slightly intelligent) brute force attack.
 
 Now, had this not been a crackme but a real binary simply hashing the whole license key with a secure hash algorithm and a sufficient output size (at least 83 bits with this format) would be better.
 But then again, it is not and pure hash cracking wouldn't be as fun.
