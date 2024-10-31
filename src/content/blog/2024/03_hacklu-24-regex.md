@@ -11,6 +11,7 @@ excerpt: 'Funny enough, this another more irregular challenge. Although it deals
     import release_announcement from "$lib/assets/2024/03_hacklu-24-regex/release_announcement.png";
     import interaction_wrong from "$lib/assets/2024/03_hacklu-24-regex/interaction_wrong.png";
     import matches_accl from "$lib/assets/2024/03_hacklu-24-regex/matches_accl.png";
+    let solver_visualization = "/blog/2024/03_hacklu-24-regex/solver_visualization.mp4";
 </script>
 
 I was knee-deep into Hack.lu's `Getting into Shape` reversing challenge and fighting with some particularly interesting tooling errors,
@@ -398,7 +399,8 @@ Then, I normalized those indices, filled empty spaces with spaces (yeah, well..)
 and prepended walls to each line.
 But see for yourself, I built a small visualization of how the maze generation of the solver works:
 
-![Visualization of building maze from program]()
+<video alt="Visualization of building maze from program" controls src={solver_visualization}>
+</video>
 
 As I said [above](#a-buggy-feature-uniqueness-matching), we need to add a unique first line before that,
 for example another wall (there are no empty lines in our generated maze).
