@@ -34,7 +34,9 @@ One initial thing I always try when working with .NET applications is extracting
 because DLLs often contain a lot of that.
 JetBrains' decompiler [dotPeek](https://www.jetbrains.com/decompiler/) is free and one of the best tools I know for the purpose.
 Sadly, the tool only runs on Windows, so a nice teammate helped me out and sent me the tools output.
-There are similar tools with partial or full cross-platform support though, in case you want to try that.
+However, since October 16, JetBrain's cross-platform .NET IDE [Rider](https://www.jetbrains.com/rider/) has become free for non-commercial use
+and is thus the better choice unless you are low on disk space or working on commercial projects.
+There are similar tools with partial or full cross-platform support too, in case you want to try that.
 I have used [AvaloniaILSpy](https://github.com/icsharpcode/AvaloniaILSpy), the cross-platform UI of [ILSpy](https://github.com/icsharpcode/ILSpy),
 with other challenges, for example.
 
