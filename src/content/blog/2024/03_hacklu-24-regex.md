@@ -6,7 +6,7 @@ excerpt: 'Funny enough, this another more irregular challenge. Although it deals
 <script lang="ts">
 	import Challenge from '$lib/components/Challenge.svelte';
 
-    let download = ['/blog/2024/03_hacklu-24-regex/handout.zip'];
+    let download = ['/blog/2024/03_hacklu-24-regex/handout.zip', '/blog/2024/03_hacklu-24-regex/resources.zip'];
 
     import release_announcement from "$lib/assets/2024/03_hacklu-24-regex/release_announcement.png";
     import interaction_wrong from "$lib/assets/2024/03_hacklu-24-regex/interaction_wrong.png";
