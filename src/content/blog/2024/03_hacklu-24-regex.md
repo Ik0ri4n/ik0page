@@ -6,21 +6,25 @@ excerpt: 'Funny enough, this another more irregular challenge. Although it deals
 <script lang="ts">
 	import Challenge from '$lib/components/Challenge.svelte';
 
-    let download = [];
-    // let download = ['/blog/2024/03_hacklu-24-regex/handout.zip'];
+    let download = ['/blog/2024/03_hacklu-24-regex/handout.zip'];
 
-    // import image from "$lib/assets/2024/03_hacklu-24-regex/image.png";
+    import release_announcement from "$lib/assets/2024/03_hacklu-24-regex/release_announcement.png";
+    import interaction_wrong from "$lib/assets/2024/03_hacklu-24-regex/interaction_wrong.png";
+    import matches_accl from "$lib/assets/2024/03_hacklu-24-regex/matches_accl.png";
 </script>
 
 I was knee-deep into Hack.lu's `Getting into Shape` reversing challenge and fighting with some particularly interesting tooling errors,
 when a team member notified us about a new batch of challenges including a reversing challenge.
+
+![Release announcement of new challenge batch]({release_announcement})
+
 The title hinted heavily at the use of regular expressions which sounded interesting.
 Now, at that point I didn't know how they were used of course, but I needed something refreshing just like that to clear my head.
 Of course, solving the challenge took a bit more time than I initially expected...
 
 ## REGenerating EXperience
 
-<Challenge name="REGenerating EXperience" author=" pspaul" category="rev" solves={1} points={500} flag="flag&lbrace;healing. restoring. center of the maze.&rbrace;" downloads={download}>
+<Challenge name="REGenerating EXperience" author="pspaul" category="rev" solves={1} points={500} flag="flag&lbrace;healing. restoring. center of the maze.&rbrace;" downloads={download}>
 Trade the treadmill for a journey of the mind. This is no ordinary spa day, prepare for a mental massage!
 </Challenge>
 
@@ -37,7 +41,7 @@ with other challenges, for example.
 
 The decompiler output of the main program looks as follows:
 
-> TODO: backslashes...
+> WARNING: The blog's current markdown parser has some issues, especially with backslashes. I included an archive with scripts and resources for download above.
 
 ```csharp
 // Decompiled with JetBrains decompiler
@@ -153,7 +157,11 @@ The challenges themselves are handled in `Tingle` that uses the server-only prob
 that produces the same result when passed to `WeaveWords`.
 If that fails the challenge kindly bids us farewell.
 
-![Challenge interaction with wrong response]()
+<div class="h-96 relative [&>*]:flex [&>*]:h-full [&>*>img]:my-0">
+
+![Challenge interaction with wrong response]({interaction_wrong})
+
+</div>
 
 So, what does `WeaveWords` do?
 First, the function matches the huge regular expression at the top of the program.
@@ -161,7 +169,7 @@ Then it uses LINQ expressions to get the occurrences of the groups `G,C,A,T,U` s
 For example, take the simple regex input `accl` (we will look at the regex in more detail [later](#one-regex-to-fool-them-all))
 that produces the following matches of the above groups:
 
-![Group matches for accl]()
+![Group matches for accl]({matches_accl})
 
 These matches would then produce the following queue order for `charQueue`: `['G','G','G','U']`.
 Finally, the function loops over the captures of the group `F` and translates the captured letter using the keys in `charQueue`.
