@@ -12,6 +12,7 @@ excerpt: 'Funny enough, this another more irregular challenge. Although it deals
     import interaction_wrong from "$lib/assets/2024/03_hacklu-24-regex/interaction_wrong.png";
     import matches_accl from "$lib/assets/2024/03_hacklu-24-regex/matches_accl.png";
     let solver_visualization = "/blog/2024/03_hacklu-24-regex/solver_visualization.mp4";
+    import first_blood from "$lib/assets/2024/03_hacklu-24-regex/first_blood.png";
 </script>
 
 I was knee-deep into Hack.lu's `Getting into Shape` reversing challenge and fighting with some particularly interesting tooling errors,
@@ -289,7 +290,7 @@ Finally, the regular expression checks whether a path to the end was found
 by ensuring the `End` group was matched.
 I hope this overview is enough to give you something to work with.
 I will talk a tiny bit more about how I got to this point and about an interesting feature I stumbled upon while building a solution.
-Feel free to skip ahead to the [next step](#building-a-valid-solution) if you are more interested in the solution or if
+If you like, feel free to skip ahead to the [next step](#building-a-valid-solution) to see how the solver works.
 
 ### Analyzing the regular expression
 
@@ -334,7 +335,8 @@ Funny enough, the result worked fine when replacing the first `C` with `w`,
 in theory just another Path symbol.
 But somehow, my generated solution did not work as is.
 That shouldn't happen, or so I thought, but quickly ignored it when I found that a bunch of spaces before the first line fixed that.
-If you're not to keen to look at regex specifics, you should [skip this too](#building-a-valid-solution).
+If you're not to keen to look at regex specifics, you can skip the code itself.
+I summarized what it does below.
 
 What happens here stems from the way uniqueness checks are implemented:
 
@@ -590,3 +592,16 @@ if __name__ == "__main__":
 I renamed a few constants for better readability in the context of a 2D maze solver.
 Also, I extracted the functions `restore_program` and `generate_blocks` and moved the connection code to a main function
 for use with my Manim scene script (see the archive with scripts and resources above).
+
+## Final words
+
+I do like creative challenges like these that build interesting logic and patterns in unconventional ways.
+However, I can understand why the challenge got only one solve as it's a lot of work to grasp what that regex does and its size is daunting.
+Hopefully, I could convey a bit of the fun I  had while solving it.
+And of course, getting a first blood for it after that work is nice and the 500 points helped us out too.
+
+![Regex challenge first blood announcement]({first_blood})
+
+I'd like to thank [pspaul](https://blog.pspaul.de/) and the whole [FluxFingers team](https://fluxfingers.net/) for organizing the CTF.
+The challenges were very interesting and had a good level of difficulty as well.
+That does take a lot of work and I appreciate it.
