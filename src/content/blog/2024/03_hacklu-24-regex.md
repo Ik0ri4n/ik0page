@@ -185,7 +185,7 @@ Thankfully, we can easily do the opposite for a given key and translate from the
 So, what we have to do is build an input string for the regular expression such that the first capture of `F` translates
 to the first letter of the challenge prompt when using the key of the group at position `0-0` for translation and so on.
 Now, to do that we will have to look at a large regular expression.
-But bare with me, I will try to keep it simple and understandable.
+But bear with me, I will try to keep it simple and understandable.
 
 ## One regex to fool them all
 
